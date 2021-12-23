@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="1dp"
+    android:shape="rectangle" >
+    <solid android:color="@color/selected_purple" />
+
+    <corners
+        android:bottomLeftRadius="35dp"
+        android:bottomRightRadius="35dp"
+        android:topLeftRadius="35dp"
+        android:topRightRadius="35dp" />
+</shape>
+
+<!--
+    https://threeidiotscoding.tistory.com/m/34
+    round button 코드 참고
+-->

@@ -18,4 +18,8 @@
     <color name="song_player">#3f3fff</color>
     <color name="song_player_bg">#a8a8a8</color>
     <color name="colorPrimaryGrey">#FF424242</color>
+
+    <color name="selected_purple">#FF6200EE</color>
+    <color name="notSelected_grey">#C5C5C5</color>
+
 </resources>
