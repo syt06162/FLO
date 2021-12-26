@@ -1,116 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+
+<HorizontalScrollView
+
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/look_plot_02_scrollview_sv"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:scrollbars="none"
+
+android:layout_marginTop="12dp"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintTop_toBottomOf="@id/look_plot_02_main_singer_iv">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
+    //리스트 1번곡
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/look_plot_02_in_01_image_iv"
+        android:layout_width="250dp"
+        android:layout_height="140dp"
+        android:scaleType="fitXY"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/img_video_exp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/song_setting_ib"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+    <TextView
+        android:id="@+id/look_plot_02_in_01_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="노래 제목 01"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@id/look_plot_02_in_01_image_iv"
+        app:layout_constraintTop_toBottomOf="@id/look_plot_02_in_01_image_iv" />
 
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="40dp"
-            android:background="@color/white"
-            android:scaleType="fitXY"
-            android:src="@drawable/btn_player_setting"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/look_plot_02_in_01_artist_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="가수우"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/look_plot_02_in_01_image_iv"
+        app:layout_constraintTop_toBottomOf="@id/look_plot_02_in_01_title_tv" />
 
-        <ImageButton
-            android:id="@+id/song_eq_ib"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="10dp"
-            android:background="@color/white"
-            android:scaleType="fitXY"
-            android:src="@drawable/btn_player_eq_off"
-            app:layout_constraintBottom_toBottomOf="@+id/song_setting_ib"
-            app:layout_constraintStart_toEndOf="@+id/song_setting_ib"
-            app:layout_constraintTop_toTopOf="@+id/song_setting_ib" />
+    //리스트 2번곡
 
-        <ImageButton
-            android:id="@+id/song_down_ib"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginEnd="15dp"
-            android:background="@color/white"
-            android:scaleType="fitXY"
-            android:src="@drawable/nugu_btn_down"
-            app:layout_constraintBottom_toBottomOf="@+id/song_eq_ib"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/song_eq_ib" />
+    <ImageView
+        android:id="@+id/look_plot_02_in_02_image_iv"
+        android:layout_width="250dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/img_video_exp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toEndOf="@id/look_plot_02_in_01_image_iv"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/look_plot_02_in_02_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="노래 제목 02"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@id/look_plot_02_in_02_image_iv"
+        app:layout_constraintTop_toBottomOf="@id/look_plot_02_in_02_image_iv" />
 
-        <ImageButton
-            android:id="@+id/song_more_ib"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="15dp"
-            android:background="@color/white"
-            android:scaleType="fitXY"
-            android:src="@drawable/btn_player_more"
-            app:layout_constraintEnd_toEndOf="@+id/song_down_ib"
-            app:layout_constraintStart_toStartOf="@+id/song_down_ib"
-            app:layout_constraintTop_toBottomOf="@+id/song_down_ib" />
+    <TextView
+        android:id="@+id/look_plot_02_in_02_artist_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="가수내가진짜가수"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/look_plot_02_in_02_image_iv"
+        app:layout_constraintTop_toBottomOf="@id/look_plot_02_in_02_title_tv" />
 
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/img_look_situ_exp_1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <View
-
-        android:layout_width="0dp"
-
-        android:layout_height="0dp"
-
-        android:layout_weight="1"
-
-        />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/img_look_situ_exp_1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+</HorizontalScrollView>

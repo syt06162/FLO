@@ -621,7 +621,7 @@
             <ImageView
                 android:id="@+id/look_plot_02_main_video_iv"
                 android:layout_width="match_parent"
-                android:layout_height="230dp"
+                android:layout_height="210dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/img_video_exp"
 
@@ -672,9 +672,9 @@
 
                     <ImageView
                         android:id="@+id/look_plot_02_in_01_image_iv"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:scaleType="centerCrop"
+                        android:layout_width="250dp"
+                        android:layout_height="140dp"
+                        android:scaleType="fitXY"
                         android:layout_marginStart="20dp"
                         android:src="@drawable/img_video_exp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -705,11 +705,11 @@
 
                     <ImageView
                         android:id="@+id/look_plot_02_in_02_image_iv"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
+                        android:layout_width="250dp"
+                        android:layout_height="140dp"
                         android:layout_marginStart="10dp"
                         android:src="@drawable/img_video_exp"
-                        android:scaleType="centerCrop"
+                        android:scaleType="fitXY"
                         app:layout_constraintStart_toEndOf="@id/look_plot_02_in_01_image_iv"
                         app:layout_constraintTop_toTopOf="parent" />
 
