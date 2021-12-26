@@ -98,7 +98,7 @@
 
         <View
             android:layout_width="10dp"
-            android:layout_height="5dp"
+            android:layout_height="10dp"
             app:layout_constraintTop_toBottomOf="@+id/song_singer_name_tv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -114,19 +114,21 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
+
+
         <ImageView
             android:id="@+id/song_album_iv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
+
             android:src="@drawable/img_album_exp2"
 
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -136,10 +138,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:paddingTop="10dp">
+
 
         <TextView
-            android:id="@+id/song_music_lyrics_01_tv"
+            android:id="@+id/song_music_lyrics_01_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
@@ -152,19 +155,19 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/song_music_lyrics_02_tv"
+            android:id="@+id/song_music_lyrics_02_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:text="눈이 따끔해 아야"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/song_music_lyrics_01_tv"
-            app:layout_constraintStart_toStartOf="@+id/song_music_lyrics_01_tv"
-            app:layout_constraintTop_toBottomOf="@id/song_music_lyrics_01_tv" />
+            app:layout_constraintEnd_toEndOf="@+id/song_music_lyrics_01_iv"
+            app:layout_constraintStart_toStartOf="@+id/song_music_lyrics_01_iv"
+            app:layout_constraintTop_toBottomOf="@id/song_music_lyrics_01_iv" />
 
 
         <LinearLayout
-            android:id="@+id/song_like_iv_layout_lo"
+            android:id="@+id/song_like_iv_layout_io"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -172,7 +175,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="15dp"
-            app:layout_constraintTop_toBottomOf="@id/song_music_lyrics_02_tv"
+            app:layout_constraintTop_toBottomOf="@id/song_music_lyrics_02_iv"
             >
 
             <ImageView
@@ -194,7 +197,7 @@
 
 
         <SeekBar
-            android:id="@+id/song_musicplayer_progress_sb"
+            android:id="@+id/musicplayer_progress_sb"
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:layout_marginStart="20dp"
@@ -211,7 +214,7 @@
             android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout_lo" />
+            app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout_io" />
 
         <TextView
             android:id="@+id/song_start_time_tv"
@@ -220,8 +223,8 @@
             android:layout_marginTop="5dp"
             android:text="00:00"
             android:textColor="@color/song_player"
-            app:layout_constraintStart_toStartOf="@+id/song_musicplayer_progress_sb"
-            app:layout_constraintTop_toBottomOf="@+id/song_musicplayer_progress_sb" />
+            app:layout_constraintStart_toStartOf="@+id/musicplayer_progress_sb"
+            app:layout_constraintTop_toBottomOf="@+id/musicplayer_progress_sb" />
 
 
         <TextView
@@ -231,12 +234,12 @@
             android:layout_marginTop="5dp"
             android:text="01:00"
             android:textColor="@color/song_player_bg"
-            app:layout_constraintEnd_toEndOf="@+id/song_musicplayer_progress_sb"
-            app:layout_constraintTop_toBottomOf="@+id/song_musicplayer_progress_sb" />
+            app:layout_constraintEnd_toEndOf="@+id/musicplayer_progress_sb"
+            app:layout_constraintTop_toBottomOf="@+id/musicplayer_progress_sb" />
 
 
         <LinearLayout
-            android:id="@+id/song_player_layout_lo"
+            android:id="@+id/song_player_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
@@ -253,10 +256,10 @@
                 android:layout_height="60dp"
                 android:layout_marginEnd="30dp"
                 android:src="@drawable/nugu_btn_repeat_inactive"
-                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout_lo"
-                app:layout_constraintEnd_toStartOf="@+id/song_player_layout_lo"
-                app:layout_constraintStart_toStartOf="@id/song_musicplayer_progress_sb"
-                app:layout_constraintTop_toTopOf="@+id/song_player_layout_lo" />
+                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+                app:layout_constraintEnd_toStartOf="@+id/song_player_layout"
+                app:layout_constraintStart_toStartOf="@id/musicplayer_progress_sb"
+                app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
 
             <ImageView
                 android:id="@+id/song_previous_iv"
@@ -292,10 +295,10 @@
                 android:layout_height="60dp"
                 android:layout_marginStart="30dp"
                 android:src="@drawable/nugu_btn_random_inactive"
-                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout_lo"
-                app:layout_constraintEnd_toEndOf="@id/song_musicplayer_progress_sb"
-                app:layout_constraintStart_toEndOf="@+id/song_player_layout_lo"
-                app:layout_constraintTop_toTopOf="@+id/song_player_layout_lo" />
+                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+                app:layout_constraintEnd_toEndOf="@id/musicplayer_progress_sb"
+                app:layout_constraintStart_toEndOf="@+id/song_player_layout"
+                app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
 
         </LinearLayout>
 
@@ -305,13 +308,13 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
 
             android:src="@drawable/btn_actionbar_instagram"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/song_player_layout_lo" />
+            app:layout_constraintTop_toBottomOf="@+id/song_player_layout" />
 
 
         <ImageView
