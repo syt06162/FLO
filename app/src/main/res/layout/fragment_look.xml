@@ -149,11 +149,23 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
+            <ImageView
+                android:id="@+id/look_plot_01_title_more_iv"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/btn_arrow_more"
+
+                app:layout_constraintTop_toTopOf="@+id/look_plot_01_title_tv"
+                app:layout_constraintBottom_toBottomOf="@+id/look_plot_01_title_tv"
+                app:layout_constraintStart_toEndOf="@+id/look_plot_01_title_tv"
+                />
+
+
             <View
                 android:id="@+id/look_plot_01_board_v"
                 android:layout_width="match_parent"
-                android:layout_height="310dp"
-                android:background="@drawable/round_button_selected"
+                android:layout_height="340dp"
+                android:background="@drawable/border"
                 android:backgroundTint="@color/transparent"
                 android:elevation="1dp"
 
@@ -222,6 +234,7 @@
                 android:textColor="@color/colorPrimaryGrey"
                 android:textSize="13sp"
 
+                android:layout_marginTop="5dp"
                 app:layout_constraintStart_toStartOf="@+id/look_plot_01_in_title_tv"
                 app:layout_constraintTop_toBottomOf="@+id/look_plot_01_in_title_tv" />
 
@@ -240,7 +253,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:id="@+id/look_plot_01_in_01_pic_iv"
@@ -311,7 +325,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:id="@+id/look_plot_01_in_02_pic_iv"
@@ -382,7 +397,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:id="@+id/look_plot_01_in_03_pic_iv"
@@ -453,7 +469,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:id="@+id/look_plot_01_in_04_pic_iv"
@@ -524,7 +541,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:id="@+id/look_plot_01_in_05_pic_iv"
@@ -616,6 +634,17 @@
                 android:layout_marginStart="20dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:id="@+id/look_plot_02_title_more_iv"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/btn_arrow_more"
+
+                app:layout_constraintTop_toTopOf="@+id/look_plot_02_title_tv"
+                app:layout_constraintBottom_toBottomOf="@+id/look_plot_02_title_tv"
+                app:layout_constraintStart_toEndOf="@+id/look_plot_02_title_tv"
+                />
 
             // 대표 영상
             <ImageView
