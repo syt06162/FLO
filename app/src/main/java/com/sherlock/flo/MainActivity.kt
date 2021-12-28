@@ -1,18 +1,38 @@
-package com.Sherlock.FLO
+package com.sherlock.flo
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.Sherlock.FLO.databinding.ActivityMainBinding
+import com.sherlock.flo.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
+
     lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNavigation()
 
+        // 미니플레이어 클릭했을 때 Activity 전환
+        val song = Song(binding.mainMiniplayerTitleTv.text.toString() , binding.mainMiniplayerSingerTv.text.toString())
+
+        binding.mainPlayerLayout.setOnClickListener {
+            //startActivity(Intent(this, SongActivity::class.java))
+            val intent = Intent(this, SongActivity::class.java)
+            intent.putExtra("title", song.title)
+            intent.putExtra("singer", song.singer)
+
+            startActivity(intent)
+        }
+
+
+
+
+        // 바텀 네비게이션 (템플릿에서 기본 제공 코드)
         binding.mainBnv.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.homeFragment -> {
@@ -52,7 +72,6 @@ class MainActivity : AppCompatActivity() {
     private fun initNavigation() {
         supportFragmentManager.beginTransaction().replace(R.id.main_frm, HomeFragment())
             .commitAllowingStateLoss()
-
     }
 
 }

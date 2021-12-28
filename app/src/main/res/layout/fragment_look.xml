@@ -42,7 +42,7 @@
                 android:layout_marginTop="20dp">
 
                 <LinearLayout
-                    android:id="@+id/look_plot_00_menu_lo"
+                    android:id="@+id/look_plot_00_menusong_player_layout_lo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 

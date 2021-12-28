@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,6 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    // 사진 크기가 유동적으로 변함
 
     // plot 00 - 앨범 사진 상단 전부
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -164,7 +167,7 @@
 
 
         <LinearLayout
-            android:id="@+id/song_like_iv_layout_lo"
+            android:id="@+id/song_like_iv_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -211,7 +214,7 @@
             android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout_lo" />
+            app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout" />
 
         <TextView
             android:id="@+id/song_start_time_tv"
@@ -236,7 +239,7 @@
 
 
         <LinearLayout
-            android:id="@+id/song_player_layout_lo"
+            android:id="@+id/song_player_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
@@ -248,38 +251,38 @@
 
 
             <ImageView
-                android:id="@+id/song_repeat_iv"
+                android:id="@+id/song_repeat_btn_iv"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginEnd="30dp"
                 android:src="@drawable/nugu_btn_repeat_inactive"
-                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout_lo"
-                app:layout_constraintEnd_toStartOf="@+id/song_player_layout_lo"
+                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+                app:layout_constraintEnd_toStartOf="@+id/song_player_layout"
                 app:layout_constraintStart_toStartOf="@id/song_musicplayer_progress_sb"
-                app:layout_constraintTop_toTopOf="@+id/song_player_layout_lo" />
+                app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
 
             <ImageView
-                android:id="@+id/song_previous_iv"
+                android:id="@+id/song_previous_btn_iv"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/btn_miniplayer_previous" />
 
             <ImageView
-                android:id="@+id/song_miniplayer_iv"
+                android:id="@+id/song_play_btn_iv"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/btn_miniplayer_play" />
 
             <ImageView
-                android:id="@+id/song_pause_iv"
+                android:id="@+id/song_pause_btn_iv"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/btn_miniplay_mvpause"
                 android:visibility="gone" />
 
             <ImageView
-                android:id="@+id/song_next_iv"
+                android:id="@+id/song_next_btn_iv"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="10dp"
@@ -292,10 +295,10 @@
                 android:layout_height="60dp"
                 android:layout_marginStart="30dp"
                 android:src="@drawable/nugu_btn_random_inactive"
-                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout_lo"
+                app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
                 app:layout_constraintEnd_toEndOf="@id/song_musicplayer_progress_sb"
-                app:layout_constraintStart_toEndOf="@+id/song_player_layout_lo"
-                app:layout_constraintTop_toTopOf="@+id/song_player_layout_lo" />
+                app:layout_constraintStart_toEndOf="@+id/song_player_layout"
+                app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
 
         </LinearLayout>
 
@@ -311,7 +314,7 @@
             android:src="@drawable/btn_actionbar_instagram"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/song_player_layout_lo" />
+            app:layout_constraintTop_toBottomOf="@+id/song_player_layout" />
 
 
         <ImageView

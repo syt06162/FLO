@@ -1,4 +1,4 @@
-package com.Sherlock.FLO
+package com.sherlock.flo
 
 import org.junit.Test
 

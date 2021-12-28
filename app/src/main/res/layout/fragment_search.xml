@@ -46,7 +46,7 @@
 
         //tab 레이아웃 해야함.
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/Fsearch_tabs_lo"
+            android:id="@+id/Fsearch_tabssong_player_layout_lo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/Fsearch_input_et"

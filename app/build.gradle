@@ -6,11 +6,14 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
+
+    // 뷰 바인딩을 사용하기 위함
     viewBinding {
         enabled = true
     }
+
     defaultConfig {
-        applicationId "com.Sherlock.FLO"
+        applicationId "com.sherlock.flo"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1

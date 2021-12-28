@@ -1,4 +1,4 @@
-package com.Sherlock.FLO
+package com.sherlock.flo
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

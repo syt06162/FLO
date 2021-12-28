@@ -1,11 +1,11 @@
-package com.Sherlock.FLO
+package com.sherlock.flo
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.Sherlock.FLO.databinding.FragmentLockerBinding
+import com.sherlock.flo.databinding.FragmentLockerBinding
 
 
 class LockerFragment : Fragment() {

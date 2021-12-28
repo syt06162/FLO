@@ -1,11 +1,11 @@
-package com.Sherlock.FLO
+package com.sherlock.flo
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.Sherlock.FLO.databinding.FragmentHomeBinding
+import com.sherlock.flo.databinding.FragmentHomeBinding
 
 
 class HomeFragment : Fragment() {
@@ -18,6 +18,11 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        binding.homePlot01Temp01ImageIv.setOnClickListener {
+            (context as MainActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, AlbumFragment())
+                .commitAllowingStateLoss()
+        }
 
         return binding.root
     }
