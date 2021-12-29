@@ -11,6 +11,13 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:windowTranslucentStatus">true</item>
         <!-- Customize your theme here. -->
+
+        <!--상태바, 타이틀 바 없애기 (상태바는 status bar windowTranslucentStatus)-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+
     </style>
 </resources>
