@@ -18,12 +18,12 @@
             android:layout_height="wrap_content"
             android:text="최신순"
             android:textColor="@color/black"
-            android:textSize="17sp"/>
+            android:textSize="15sp"/>
 
         <ImageView
             android:id="@+id/video_sorting_iv"
-            android:layout_width="60dp"
-            android:layout_height="25dp"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
             android:src="@drawable/nugu_btn_down"
             android:scaleType="fitCenter"/>
     </LinearLayout>

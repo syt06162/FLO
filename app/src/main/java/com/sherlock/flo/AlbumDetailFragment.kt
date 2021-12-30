@@ -20,4 +20,10 @@ class AlbumDetailFragment: Fragment() {
 
         return binding.root
     }
+
+    // 크기 다시 조절해주기
+    override fun onResume() {
+        super.onResume()
+        binding.root.requestLayout()
+    }
 }
