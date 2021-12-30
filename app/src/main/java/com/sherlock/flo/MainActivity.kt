@@ -30,8 +30,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-
         // 바텀 네비게이션 (템플릿에서 기본 제공 코드)
         binding.mainBnv.setOnItemSelectedListener {
             when (it.itemId) {

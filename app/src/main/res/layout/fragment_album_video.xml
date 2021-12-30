@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/video_sorting_lo"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/video_sorting_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="최신순"
+            android:textColor="@color/black"
+            android:textSize="17sp"/>
+
+        <ImageView
+            android:id="@+id/video_sorting_iv"
+            android:layout_width="60dp"
+            android:layout_height="25dp"
+            android:src="@drawable/nugu_btn_down"
+            android:scaleType="fitCenter"/>
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/video_context_01_layout_lo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/video_sorting_lo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        >
+
+        <ImageView
+            android:id="@+id/video_context_01_image_iv"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/img_video_exp"
+            android:scaleType="fitXY"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/video_context_01_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="[MV] 여름이었다."
+            android:textSize="17sp"
+            android:textColor="#000000"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/video_context_01_image_iv"
+            app:layout_constraintStart_toStartOf="@id/video_context_01_image_iv"
+            />
+
+        <TextView
+            android:id="@+id/video_context_01_information_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이우든 | 2021.10.13"
+            android:textSize="13sp"
+            android:textColor="#000000"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="@id/video_context_01_title_tv"
+            app:layout_constraintStart_toStartOf="@id/video_context_01_title_tv"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

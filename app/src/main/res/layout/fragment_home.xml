@@ -319,15 +319,16 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         // after first plot (slide ads) 분홍배경 광고창
-        <ImageView
-            android:id="@+id/home_plot_01_ad_iv"
-            android:layout_width="match_parent"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/home_plot_01_banner_vp"
             android:scaleType="fitXY"
-            android:layout_height="80dp"
             android:src="@drawable/img_home_viewpager_exp"
 
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
             android:layout_marginTop="40dp"
             />
+
 
         // second plot 매일 들어도 좋은 팟캐스트
         <androidx.constraintlayout.widget.ConstraintLayout
