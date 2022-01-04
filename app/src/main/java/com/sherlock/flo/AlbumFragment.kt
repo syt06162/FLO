@@ -22,6 +22,7 @@ class AlbumFragment : Fragment(){
     ): View? {
         binding = FragmentAlbumBinding.inflate(inflater, container, false)
 
+        // 다시 홈 프래그먼트로 전환
         binding.albumArrowIv.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, HomeFragment())

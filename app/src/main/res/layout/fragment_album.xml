@@ -117,8 +117,8 @@
                 // 앨범이미지, 검정음반이미지
                 <ImageView
                     android:id="@+id/album_main_image_iv"
-                    android:layout_width="220dp"
-                    android:layout_height="220dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:src="@drawable/img_album_exp2"
                     android:scaleType="fitXY"
 
@@ -129,8 +129,8 @@
 
                 <ImageView
                     android:id="@+id/album_main_black_iv"
-                    android:layout_width="40dp"
-                    android:layout_height="180dp"
+                    android:layout_width="35dp"
+                    android:layout_height="150dp"
                     android:src="@drawable/img_album_lp"
                     android:scaleType="fitXY"
 
@@ -160,7 +160,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="15dp"
                     app:layout_constraintTop_toBottomOf="@id/album_content_tb"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
