@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.sherlock.flo.databinding.FragmentBannerBinding
 
-class BannerFragment(val imgRes : Int) : Fragment() {
+class BannerFragment(private val imgRes : Int) : Fragment() {
 
     lateinit var binding : FragmentBannerBinding
 
