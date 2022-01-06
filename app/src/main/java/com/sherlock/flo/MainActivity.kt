@@ -18,13 +18,15 @@ class MainActivity : AppCompatActivity() {
         initNavigation()
 
         // 미니플레이어 클릭했을 때 Activity 전환
-        val song = Song(binding.mainMiniplayerTitleTv.text.toString() , binding.mainMiniplayerSingerTv.text.toString())
+        val song = Song("라일락1","IU1", 190, false)
 
         binding.mainPlayerLayout.setOnClickListener {
             //startActivity(Intent(this, SongActivity::class.java))
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra("title", song.title)
             intent.putExtra("singer", song.singer)
+            intent.putExtra("playTime", song.playTime)
+            intent.putExtra("isPlaying", song.isPlaying)
 
             startActivity(intent)
         }

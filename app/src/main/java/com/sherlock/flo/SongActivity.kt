@@ -1,6 +1,9 @@
 package com.sherlock.flo
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -9,11 +12,18 @@ import com.sherlock.flo.databinding.ActivitySongBinding
 class SongActivity : AppCompatActivity() {
 
     lateinit var binding : ActivitySongBinding
+    private val song : Song = Song() // 현재 재생중인 노래
+    private lateinit var player: Player // 음악 재생하는 쓰레드
+//    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initSong()
+
+        player = Player(song.playTime, song.isPlaying)
+        player.start()
 
         // HomeFragment 로 되돌아가기
         binding.songDownIb.setOnClickListener {
@@ -22,10 +32,12 @@ class SongActivity : AppCompatActivity() {
 
         // 재생 일시정지 버튼 클릭시 토글
         binding.songPlayBtnIv.setOnClickListener {
-            setPlayerStatus(false)
+            player.isPlaying = true
+            setPlayerStatus(true)
         }
         binding.songPauseBtnIv.setOnClickListener {
-            setPlayerStatus(true)
+            player.isPlaying = false
+            setPlayerStatus(false)
         }
 
         // 반복 버튼 클릭시 변화 (반복꺼짐(2) - 전체반복(0) - 1개반복(1) - (다시)반복꺼짐)
@@ -39,6 +51,7 @@ class SongActivity : AppCompatActivity() {
             setRepeatStatus(2)
         }
 
+        // 랜덤재생 버튼 클릭시 토클
         binding.songRandomOffIv.setOnClickListener {
             setRandomPlayStatus(true)
         }
@@ -46,23 +59,31 @@ class SongActivity : AppCompatActivity() {
             setRandomPlayStatus(false)
         }
 
+    }
 
-        // 제목, 가수 이름 받아와서 바꾸기
-        if (intent.hasExtra("title") && intent.hasExtra("singer")){
-            binding.songMusicTitleTv.text = intent.getStringExtra("title")
-            binding.songSingerNameTv.text = intent.getStringExtra("singer")
+    private fun initSong() {
+        // 제목, 가수 이름, 음악 시간, 재생상태 받아와서 바꾸기
+        if (intent.hasExtra("title") && intent.hasExtra("singer") && intent.hasExtra("playTime") && intent.hasExtra("isPlaying")){
+            song.title = intent.getStringExtra("title")!!
+            song.singer = intent.getStringExtra("singer")!!
+            song.playTime = intent.getIntExtra("playTime", 0)
+            song.isPlaying = intent.getBooleanExtra("isPlaying", false)
+
+            binding.songMusicTitleTv.text = song.title
+            binding.songSingerNameTv.text = song.singer
+            binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
+            setPlayerStatus(song.isPlaying)
         }
-
     }
 
     private fun setPlayerStatus(isPlaying: Boolean){
-        if (isPlaying){
-            binding.songPlayBtnIv.visibility = View.VISIBLE
-            binding.songPauseBtnIv.visibility = View.GONE
+        if (isPlaying){ //플레잉 하게 해라
+            binding.songPlayBtnIv.visibility = View.GONE
+            binding.songPauseBtnIv.visibility = View.VISIBLE
         }
         else {
-            binding.songPauseBtnIv.visibility = View.VISIBLE
-            binding.songPlayBtnIv.visibility = View.GONE
+            binding.songPauseBtnIv.visibility = View.GONE
+            binding.songPlayBtnIv.visibility = View.VISIBLE
         }
     }
 
@@ -100,4 +121,39 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+    inner class Player(private val playTime: Int, var isPlaying: Boolean) : Thread() {
+        private var second = 0
+
+        override fun run() {
+            runOnUiThread {
+                binding.songMusicplayerProgressSb.progress = 0
+                binding.songStartTimeTv.text = "00:00"
+            }
+            try {
+                while(true) {
+                    if (second >= playTime) {
+                        break
+                    }
+                    if (isPlaying){
+                        sleep(1000)
+                        second++
+                        runOnUiThread {
+                            binding.songMusicplayerProgressSb.progress = second*1000/playTime
+                            binding.songStartTimeTv.text = String.format("%02d:%02d", second/60, second%60)
+                        }
+                    }
+                }
+            }catch (e: InterruptedException){
+                Log.d("YEJOON_INTERRUPT", "플레이어 쓰레드 정상 종료")
+            }
+
+        }
+    }
+
+    override fun onDestroy() {
+        Log.d("YEJOON_INTERRUPT", "인터럽트 2")
+        super.onDestroy()
+        player.interrupt() // 플레이어 종료
+        Log.d("YEJOON_INTERRUPT", "인터럽트 3")
+    }
 }
