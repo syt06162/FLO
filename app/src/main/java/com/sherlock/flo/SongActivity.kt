@@ -22,7 +22,7 @@ class SongActivity : AppCompatActivity() {
         setContentView(binding.root)
         initSong()
 
-        player = Player(song.playTime, song.isPlaying)
+        player = Player(song.playTime, song.isPlaying, 0)
         player.start()
 
         // HomeFragment 로 되돌아가기
@@ -40,15 +40,18 @@ class SongActivity : AppCompatActivity() {
             setPlayerStatus(false)
         }
 
-        // 반복 버튼 클릭시 변화 (반복꺼짐(2) - 전체반복(0) - 1개반복(1) - (다시)반복꺼짐)
+        // 반복 버튼 클릭시 변화 (반복꺼짐(0) - 전체반복(2) - 1개반복(1) - (다시)반복꺼짐)
         binding.songRepeatOffIv.setOnClickListener {
-            setRepeatStatus(0)
+            setRepeatStatus(2)
+            player.repeatStatus = 2
         }
         binding.songRepeatOnAllIv.setOnClickListener {
             setRepeatStatus(1)
+            player.repeatStatus = 1
         }
         binding.songRepeatOnOneIv.setOnClickListener {
-            setRepeatStatus(2)
+            setRepeatStatus(0)
+            player.repeatStatus = 0
         }
 
         // 랜덤재생 버튼 클릭시 토클
@@ -91,9 +94,9 @@ class SongActivity : AppCompatActivity() {
         // isRepeating 0:전체반복 1:한곡반복 2:반복안함
         when (isRepeating) {
             0 -> {
-                binding.songRepeatOffIv.visibility = View.GONE
-                binding.songRepeatOnAllIv.visibility = View.VISIBLE
-                Toast.makeText(this, "전체 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
+                binding.songRepeatOnOneIv.visibility = View.GONE
+                binding.songRepeatOffIv.visibility = View.VISIBLE
+                Toast.makeText(this, "반복을 사용하지 않습니다.",Toast.LENGTH_SHORT).show()
             }
             1 -> {
                 binding.songRepeatOnAllIv.visibility = View.GONE
@@ -101,9 +104,9 @@ class SongActivity : AppCompatActivity() {
                 Toast.makeText(this, "현재 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
             }
             2 -> {
-                binding.songRepeatOnOneIv.visibility = View.GONE
-                binding.songRepeatOffIv.visibility = View.VISIBLE
-                Toast.makeText(this, "반복을 사용하지 않습니다.",Toast.LENGTH_SHORT).show()
+                binding.songRepeatOffIv.visibility = View.GONE
+                binding.songRepeatOnAllIv.visibility = View.VISIBLE
+                Toast.makeText(this, "전체 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -121,7 +124,8 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
-    inner class Player(private val playTime: Int, var isPlaying: Boolean) : Thread() {
+    // 재생시 seekbar progress 변화
+    inner class Player(private val playTime: Int, var isPlaying: Boolean, var repeatStatus: Int) : Thread() {
         private var second = 0
 
         override fun run() {
@@ -132,7 +136,23 @@ class SongActivity : AppCompatActivity() {
             try {
                 while(true) {
                     if (second >= playTime) {
-                        break
+                        when (repeatStatus) {
+                            2 -> {
+                                second = 0
+                                // 다음 곡으로 가기 (나중에 추가해야함)
+                            }
+                            1 -> {
+                                second = 0
+                            }
+                            else -> { // 반복 안하기이면 종료
+                                runOnUiThread {
+                                    binding.songPauseBtnIv.visibility = View.GONE
+                                    binding.songPlayBtnIv.visibility = View.VISIBLE
+                                    isPlaying = false
+                                }
+                                break
+                            }
+                        }
                     }
                     if (isPlaying){
                         sleep(1000)
