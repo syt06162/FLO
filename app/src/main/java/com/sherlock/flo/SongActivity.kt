@@ -19,11 +19,20 @@ class SongActivity : AppCompatActivity() {
     private lateinit var timer: Timer // 음악 재생시 second,seekbar 관리 스레드
     private var mediaPlayer: MediaPlayer? = null // 음악 재생시 음악 나오게 하는것
     internal var repeatStatus : Int = 0
+    private var randomPlayStatus : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 반복재생, 랜덤재생 상태 불러오기 (sharedPreferences - "song_activity_status"
+        val sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
+        repeatStatus = sharedPreferences.getInt("repeatStatus", 0)
+        randomPlayStatus = sharedPreferences.getBoolean("randomPlayStatus", false)
+        setRepeatStatus(repeatStatus, false)
+        setRandomPlayStatus(randomPlayStatus, false)
+
         initSong()
 
         timer = Timer(song.playTime, song.isPlaying)
@@ -39,6 +48,7 @@ class SongActivity : AppCompatActivity() {
             setPlayerStatus(true)
             if (timer.second == song.playTime) {
                 song.second = 0
+                binding.songStartTimeTv.text = "00:00"
                 binding.songMusicplayerProgressSb.progress = 0
                 timer = Timer(song.playTime, song.isPlaying)
                 timer.start()
@@ -57,24 +67,26 @@ class SongActivity : AppCompatActivity() {
 
         // 반복 버튼 클릭시 변화 (반복꺼짐(0) - 전체반복(2) - 1개반복(1) - (다시)반복꺼짐)
         binding.songRepeatOffIv.setOnClickListener {
-            setRepeatStatus(2)
             repeatStatus = 2
+            setRepeatStatus(repeatStatus)
         }
         binding.songRepeatOnAllIv.setOnClickListener {
-            setRepeatStatus(1)
             repeatStatus = 1
+            setRepeatStatus(repeatStatus)
         }
         binding.songRepeatOnOneIv.setOnClickListener {
-            setRepeatStatus(0)
             repeatStatus = 0
+            setRepeatStatus(repeatStatus)
         }
 
         // 랜덤재생 버튼 클릭시 토클
         binding.songRandomOffIv.setOnClickListener {
-            setRandomPlayStatus(true)
+            randomPlayStatus = true
+            setRandomPlayStatus(randomPlayStatus)
         }
         binding.songRandomOnIv.setOnClickListener {
-            setRandomPlayStatus(false)
+            randomPlayStatus = false
+            setRandomPlayStatus(randomPlayStatus)
         }
 
         // seekbar 중간 지점 눌렀을 때 해당 지점으로 점프
@@ -95,8 +107,11 @@ class SongActivity : AppCompatActivity() {
             song.music = intent.getStringExtra("music")!!
             val music = resources.getIdentifier(song.music, "raw", this.packageName)
 
+            Log.d("YEJ", "song" + song.second.toString())
             binding.songMusicTitleTv.text = song.title
             binding.songSingerNameTv.text = song.singer
+            binding.songMusicplayerProgressSb.progress = song.second*1000/song.playTime
+            binding.songStartTimeTv.text = String.format("%02d:%02d", song.second/60, song.second%60)
             binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
             setPlayerStatus(song.isPlaying)
             mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
@@ -115,37 +130,45 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRepeatStatus(isRepeating: Int){
+    private fun setRepeatStatus(isRepeating: Int, printingToast: Boolean = true){
         // isRepeating 0:전체반복 1:한곡반복 2:반복안함
         when (isRepeating) {
             0 -> {
-                binding.songRepeatOnOneIv.visibility = View.GONE
                 binding.songRepeatOffIv.visibility = View.VISIBLE
-                Toast.makeText(this, "반복을 사용하지 않습니다.",Toast.LENGTH_SHORT).show()
+                binding.songRepeatOnOneIv.visibility = View.GONE
+                binding.songRepeatOnAllIv.visibility = View.GONE
+                if (printingToast)
+                    Toast.makeText(this, "반복을 사용하지 않습니다.",Toast.LENGTH_SHORT).show()
             }
             1 -> {
-                binding.songRepeatOnAllIv.visibility = View.GONE
+                binding.songRepeatOffIv.visibility = View.GONE
                 binding.songRepeatOnOneIv.visibility = View.VISIBLE
-                Toast.makeText(this, "현재 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
+                binding.songRepeatOnAllIv.visibility = View.GONE
+                if (printingToast)
+                    Toast.makeText(this, "현재 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
             }
             2 -> {
                 binding.songRepeatOffIv.visibility = View.GONE
+                binding.songRepeatOnOneIv.visibility = View.GONE
                 binding.songRepeatOnAllIv.visibility = View.VISIBLE
-                Toast.makeText(this, "전체 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
+                if (printingToast)
+                    Toast.makeText(this, "전체 음악을 반복합니다.",Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun setRandomPlayStatus(isRandom: Boolean){
+    private fun setRandomPlayStatus(isRandom: Boolean, printingToast: Boolean = true){
         if (isRandom){
             binding.songRandomOnIv.visibility = View.VISIBLE
             binding.songRandomOffIv.visibility = View.GONE
-            Toast.makeText(this, "재생목록을 랜덤으로 재생합니다.",Toast.LENGTH_SHORT).show()
+            if (printingToast)
+                Toast.makeText(this, "재생목록을 랜덤으로 재생합니다.",Toast.LENGTH_SHORT).show()
         }
         else {
             binding.songRandomOffIv.visibility = View.VISIBLE
             binding.songRandomOnIv.visibility = View.GONE
-            Toast.makeText(this, "재생목록을 순서대로 재생합니다.",Toast.LENGTH_SHORT).show()
+            if (printingToast)
+                Toast.makeText(this, "재생목록을 순서대로 재생합니다.",Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -155,25 +178,21 @@ class SongActivity : AppCompatActivity() {
         private var div10second: Float = 0f
 
         override fun run() {
-            runOnUiThread {
-                binding.songMusicplayerProgressSb.progress = song.second*1000/song.playTime
-                binding.songStartTimeTv.text = String.format("%02d:%02d", song.second/60, song.second%60)
-            }
             try {
                 while(true) {
                     if (second >= playTime) {
-                        runOnUiThread {
-                            binding.songMusicplayerProgressSb.progress = second*1000/playTime
-                        }
+                        sleep(1000)
                         when (repeatStatus) {
                             2 -> {
                                 second = 0
                                 mediaPlayer?.seekTo(0)
+                                mediaPlayer?.start()
                                 // 다음 곡으로 가기 (나중에 추가해야함)
                             }
                             1 -> {
                                 second = 0
                                 mediaPlayer?.seekTo(0)
+                                mediaPlayer?.start()
                             }
                             else -> { // 반복 안하기이면 종료
                                 runOnUiThread {
@@ -204,6 +223,7 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onPause() {
         super.onPause()
         mediaPlayer?.pause()
@@ -213,11 +233,18 @@ class SongActivity : AppCompatActivity() {
         setPlayerStatus(false)
 
         // sharedPreferences 에 현재까지의 내용 저장
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val editor = sharedPreferences.edit() // sp 조작시 사용
-        // Gson 을 Json 으로 변환해서 editor를 통해 sp에 저장한다.
-        val json = gson.toJson(song)
+        var sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        var editor = sharedPreferences.edit() // sp 조작시 사용
+        // Gson 을 Json 으로 변환해서 editor를 통해 sp - "song" 에 저장한다.
+        var json = gson.toJson(song)
         editor.putString("song", json)
+        editor.apply()
+
+        // 반복상태, 랜덤재생 상태도 저장 "song_activity_status" 에
+        sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
+        editor = sharedPreferences.edit() // sp 조작시 사용
+        editor.putInt("repeatStatus", repeatStatus)
+        editor.putBoolean("randomPlayStatus", randomPlayStatus)
         editor.apply()
     }
 
