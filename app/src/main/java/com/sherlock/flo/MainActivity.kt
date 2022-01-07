@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.mainPlayerLayout.setOnClickListener {
             val intent = Intent(this, SongActivity::class.java)
-            val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), 0, 195, false, "music_lilac")
+            val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), binding.mainSeekbarSb.progress*4/1000, 4, false, "music_lilac")
 
             intent.putExtra("title", song.title)
             intent.putExtra("singer", song.singer)

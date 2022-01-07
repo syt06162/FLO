@@ -18,6 +18,7 @@ class SongActivity : AppCompatActivity() {
     private val gson: Gson = Gson()
     private lateinit var timer: Timer // 음악 재생시 second,seekbar 관리 스레드
     private var mediaPlayer: MediaPlayer? = null // 음악 재생시 음악 나오게 하는것
+    internal var repeatStatus : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +26,7 @@ class SongActivity : AppCompatActivity() {
         setContentView(binding.root)
         initSong()
 
-        timer = Timer(song.playTime, song.isPlaying, 0)
+        timer = Timer(song.playTime, song.isPlaying)
         timer.start()
 
         // HomeFragment 로 되돌아가기
@@ -35,14 +36,21 @@ class SongActivity : AppCompatActivity() {
 
         // 재생 일시정지 버튼 클릭시 토글
         binding.songPlayBtnIv.setOnClickListener {
-            timer.isPlaying = true
             setPlayerStatus(true)
+            if (timer.second == song.playTime) {
+                song.second = 0
+                binding.songMusicplayerProgressSb.progress = 0
+                timer = Timer(song.playTime, song.isPlaying)
+                timer.start()
+                mediaPlayer?.seekTo(0)
+            }
+            timer.isPlaying = true
             song.isPlaying = true
             mediaPlayer?.start()
         }
         binding.songPauseBtnIv.setOnClickListener {
-            timer.isPlaying = false
             setPlayerStatus(false)
+            timer.isPlaying = false
             song.isPlaying = false
             mediaPlayer?.pause()
         }
@@ -50,15 +58,15 @@ class SongActivity : AppCompatActivity() {
         // 반복 버튼 클릭시 변화 (반복꺼짐(0) - 전체반복(2) - 1개반복(1) - (다시)반복꺼짐)
         binding.songRepeatOffIv.setOnClickListener {
             setRepeatStatus(2)
-            timer.repeatStatus = 2
+            repeatStatus = 2
         }
         binding.songRepeatOnAllIv.setOnClickListener {
             setRepeatStatus(1)
-            timer.repeatStatus = 1
+            repeatStatus = 1
         }
         binding.songRepeatOnOneIv.setOnClickListener {
             setRepeatStatus(0)
-            timer.repeatStatus = 0
+            repeatStatus = 0
         }
 
         // 랜덤재생 버튼 클릭시 토클
@@ -68,6 +76,11 @@ class SongActivity : AppCompatActivity() {
         binding.songRandomOnIv.setOnClickListener {
             setRandomPlayStatus(false)
         }
+
+        // seekbar 중간 지점 눌렀을 때 해당 지점으로 점프
+//        binding.songMusicplayerProgressSb.setOnSeekBarChangeListener{
+//            onProgress
+//        }
 
     }
 
@@ -87,6 +100,7 @@ class SongActivity : AppCompatActivity() {
             binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
             setPlayerStatus(song.isPlaying)
             mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
+            mediaPlayer?.seekTo(song.second*1000)
         }
     }
 
@@ -136,41 +150,50 @@ class SongActivity : AppCompatActivity() {
     }
 
     // 재생시 seekbar, second 변화하는 timer
-    inner class Timer(private val playTime: Int, var isPlaying: Boolean, var repeatStatus: Int) : Thread() {
-        private var second = 0
+    inner class Timer(private val playTime: Int, var isPlaying: Boolean) : Thread() {
+        internal var second :Int = song.second
+        private var div10second: Float = 0f
 
         override fun run() {
             runOnUiThread {
-                binding.songMusicplayerProgressSb.progress = 0
-                binding.songStartTimeTv.text = "00:00"
+                binding.songMusicplayerProgressSb.progress = song.second*1000/song.playTime
+                binding.songStartTimeTv.text = String.format("%02d:%02d", song.second/60, song.second%60)
             }
             try {
                 while(true) {
                     if (second >= playTime) {
+                        runOnUiThread {
+                            binding.songMusicplayerProgressSb.progress = second*1000/playTime
+                        }
                         when (repeatStatus) {
                             2 -> {
                                 second = 0
+                                mediaPlayer?.seekTo(0)
                                 // 다음 곡으로 가기 (나중에 추가해야함)
                             }
                             1 -> {
                                 second = 0
+                                mediaPlayer?.seekTo(0)
                             }
                             else -> { // 반복 안하기이면 종료
                                 runOnUiThread {
-                                    binding.songPauseBtnIv.visibility = View.GONE
-                                    binding.songPlayBtnIv.visibility = View.VISIBLE
+                                    setPlayerStatus(false)
                                     isPlaying = false
                                 }
-                                break
+                                timer.interrupt()
                             }
                         }
                     }
                     if (isPlaying){
-                        sleep(1000)
-                        second++
-                        runOnUiThread {
-                            binding.songMusicplayerProgressSb.progress = second*1000/playTime
-                            binding.songStartTimeTv.text = String.format("%02d:%02d", second/60, second%60)
+                        sleep(100)
+                        div10second += 0.1f
+                        if (div10second >= 1f) {
+                            div10second -= 1f
+                            second += 1
+                            runOnUiThread {
+                                binding.songMusicplayerProgressSb.progress = second*1000/playTime
+                                binding.songStartTimeTv.text = String.format("%02d:%02d", second/60, second%60)
+                            }
                         }
                     }
                 }
@@ -195,7 +218,6 @@ class SongActivity : AppCompatActivity() {
         // Gson 을 Json 으로 변환해서 editor를 통해 sp에 저장한다.
         val json = gson.toJson(song)
         editor.putString("song", json)
-
         editor.apply()
     }
 
