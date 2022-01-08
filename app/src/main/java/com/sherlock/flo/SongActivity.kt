@@ -2,8 +2,6 @@ package com.sherlock.flo
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -27,14 +25,62 @@ class SongActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initSong()
+        initClickListener() // 각종 클릭 리스너
 
-        // 반복재생, 랜덤재생 상태 불러오기 (sharedPreferences - "song_activity_status"
-        val sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
-        repeatStatus = sharedPreferences.getInt("repeatStatus", 0)
-        randomPlayStatus = sharedPreferences.getBoolean("randomPlayStatus", false)
-        setRepeatStatus(repeatStatus, false)
-        setRandomPlayStatus(randomPlayStatus, false)
+        loadRepeatRandomStatusFromSharedPreferences() // 반복재생, 랜덤재생 정보 불러오기
 
+        // seekbar 중간 지점 눌렀을 때 해당 지점으로 점프
+//        binding.songMusicplayerProgressSb.setOnSeekBarChangeListener{
+//            onProgress
+//        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // mediaPlayer와 timer 생성, 그리고 음악 재생(isPlaying에 따라)
+        val music = resources.getIdentifier(song.music, "raw", this.packageName)
+        mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
+        mediaPlayer?.seekTo(song.second*1000)
+        if (song.isPlaying)
+            mediaPlayer?.start()
+        timer = Timer(song.playTime, song.isPlaying)
+        timer.start()
+
+        Log.d("YYYcount", Thread.activeCount().toString())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        
+        // 시간 정보 song에 저장
+        song.second = timer.second
+
+        // 음악 종료
+        timer.interrupt() // 타이머 종료
+        mediaPlayer?.release() // 미디어 플레이어 해제
+        mediaPlayer = null
+
+        saveSongInSharedPreferences() // 노래 정보 sp에 저장
+
+        Log.d("YYYSONG", song.second.toString())
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        // mediaPlayer, timer 일시정지(pause)
+        mediaPlayer?.pause()
+        timer.isPlaying = false
+        song.isPlaying = false
+        setPlayerStatus(false)
+
+        saveRepeatRandomStatusInSharedPreferences() // 반복재생,랜덤재생 정보 sp에 저장
+
+    }
+
+
+    private fun initClickListener(){
         // HomeFragment 로 되돌아가기
         binding.songDownIb.setOnClickListener {
             finish()
@@ -85,12 +131,6 @@ class SongActivity : AppCompatActivity() {
             randomPlayStatus = false
             setRandomPlayStatus(randomPlayStatus)
         }
-
-        // seekbar 중간 지점 눌렀을 때 해당 지점으로 점프
-//        binding.songMusicplayerProgressSb.setOnSeekBarChangeListener{
-//            onProgress
-//        }
-
     }
 
     private fun initSong() {
@@ -113,6 +153,7 @@ class SongActivity : AppCompatActivity() {
             setPlayerStatus(song.isPlaying)
         }
     }
+
 
     private fun setPlayerStatus(isPlaying: Boolean){
         if (isPlaying){ //플레잉 하게 해라
@@ -167,6 +208,36 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun saveSongInSharedPreferences() {
+        // sharedPreferences 에 현재까지의 내용 저장
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit() // sp 조작시 사용
+        // Gson 을 Json 으로 변환해서 editor를 통해 sp - "song" 에 저장한다.
+        val json = gson.toJson(song)
+        editor.putString("song", json)
+        editor.apply()
+    }
+
+    private fun saveRepeatRandomStatusInSharedPreferences() {
+        // 반복상태, 랜덤재생 상태도 저장 "song_activity_status" 에
+        val sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
+        val editor = sharedPreferences.edit() // sp 조작시 사용
+        editor.putInt("repeatStatus", repeatStatus)
+        editor.putBoolean("randomPlayStatus", randomPlayStatus)
+        editor.apply()
+    }
+
+    private fun loadRepeatRandomStatusFromSharedPreferences() {
+        // 반복재생, 랜덤재생 상태 불러오기 (sharedPreferences - "song_activity_status"
+        val sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
+        repeatStatus = sharedPreferences.getInt("repeatStatus", 0)
+        randomPlayStatus = sharedPreferences.getBoolean("randomPlayStatus", false)
+        setRepeatStatus(repeatStatus, false)
+        setRandomPlayStatus(randomPlayStatus, false)
+    }
+
+
     // 재생시 seekbar, second 변화하는 timer
     inner class Timer(private val playTime: Int, var isPlaying: Boolean) : Thread() {
         internal var second :Int = song.second
@@ -197,7 +268,7 @@ class SongActivity : AppCompatActivity() {
                             else -> { // 반복 안하기이면 종료
                                 runOnUiThread {
                                     setPlayerStatus(false)
-                                    isPlaying = false
+                                    song.isPlaying = false
                                 }
                                 timer.interrupt()
                             }
@@ -223,58 +294,5 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
 
-        val music = resources.getIdentifier(song.music, "raw", this.packageName)
-        mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
-        mediaPlayer?.seekTo(song.second*1000)
-        if (song.isPlaying)
-            mediaPlayer?.start()
-        timer = Timer(song.playTime, song.isPlaying)
-        timer.start()
-
-        Log.d("YYYcount", Thread.activeCount().toString())
-    }
-
-    override fun onPause() {
-        super.onPause()
-        song.second = timer.second
-
-        timer.interrupt() // 타이머 종료
-        mediaPlayer?.release() // 미디어 플레이어 해제
-        mediaPlayer = null
-
-        Log.d("YYYSONG", song.second.toString())
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        mediaPlayer?.pause()
-        timer.isPlaying = false
-        song.isPlaying = false
-        setPlayerStatus(false)
-
-        // sharedPreferences 에 현재까지의 내용 저장
-        var sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        var editor = sharedPreferences.edit() // sp 조작시 사용
-        // Gson 을 Json 으로 변환해서 editor를 통해 sp - "song" 에 저장한다.
-        var json = gson.toJson(song)
-        editor.putString("song", json)
-        editor.apply()
-
-        // 반복상태, 랜덤재생 상태도 저장 "song_activity_status" 에
-        sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
-        editor = sharedPreferences.edit() // sp 조작시 사용
-        editor.putInt("repeatStatus", repeatStatus)
-        editor.putBoolean("randomPlayStatus", randomPlayStatus)
-        editor.apply()
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
 }

@@ -23,13 +23,66 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initNavigation()
 
+        initNavigation() // 바텀 네비게이션 (템플릿에서 기본 제공 코드)
+        initClickListener() // 각종 클릭 리스너들
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        loadSongFromSharedPreferences() // sp에서 song 정보 받아오기
+
+        if (createFlag){ // create 즉 앱 처음 실행일때는 sp에 isplaying이 true 값이어도 무조건 isplying을 false로.
+            song.isPlaying = false
+            createFlag = false
+        }
+
+        setMiniPlayer(song)
+        Log.d("YYYcount", Thread.activeCount().toString())
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // 시간 정보 song에 저장
+        song.second = timer.second
+
+        // 음악 종료
+        timer.interrupt() // 타이머 종료
+        mediaPlayer?.release() // 미디어 플레이어 해제
+        mediaPlayer = null
+        Log.d("YYYplaying", "main pause"+song.isPlaying.toString())
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+
+        // mediaPlayer, timer 일시정지(pause)
+        mediaPlayer?.pause()
+        timer.isPlaying = false
+        song.isPlaying = false
+        setPlayerStatus(false)
+
+        saveSongInSharedPreferences() // 완전 종료시 or Home버튼 누를시 sp에 데이터 저장
+
+        Log.d("YYYplaying", "main stop"+song.isPlaying.toString())
+    }
+
+
+    private fun initClickListener() {
         // 미니플레이어 클릭했을 때 Activity 전환
         binding.mainPlayerLayout.setOnClickListener {
             val intent = Intent(this, SongActivity::class.java)
-            val intentSong = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), timer.second, 6, song.isPlaying, "music_lilac")
-
+            val intentSong = Song(
+                binding.mainMiniplayerTitleTv.text.toString(),
+                binding.mainMiniplayerSingerTv.text.toString(),
+                timer.second,
+                6,
+                song.isPlaying,
+                "music_lilac"
+            )
             intent.putExtra("title", intentSong.title)
             intent.putExtra("singer", intentSong.singer)
             intent.putExtra("second", intentSong.second)
@@ -62,9 +115,60 @@ class MainActivity : AppCompatActivity() {
             timer.isPlaying = false
             mediaPlayer?.pause()
         }
+    }
 
+    private fun setPlayerStatus(isPlaying: Boolean){
+        if (isPlaying){ //플레잉 하게 해라
+            binding.mainMiniplayerPlayBtn.visibility = View.GONE
+            binding.mainMiniplayerPauseBtn.visibility = View.VISIBLE
+        }
+        else {
+            binding.mainMiniplayerPauseBtn.visibility = View.GONE
+            binding.mainMiniplayerPlayBtn.visibility = View.VISIBLE
+        }
+    }
 
-        // 바텀 네비게이션 (템플릿에서 기본 제공 코드)
+    private fun setMiniPlayer(song : Song){
+        binding.mainMiniplayerTitleTv.text = song.title
+        binding.mainMiniplayerSingerTv.text = song.singer
+        binding.mainSeekbarSb.progress = song.second*1000/song.playTime
+        setPlayerStatus(song.isPlaying)
+
+        // mediaPlayer, timer 생성, 그리고 음악 재생(isPlaying에 따라)
+        val music = resources.getIdentifier(song.music, "raw", this.packageName)
+        mediaPlayer = MediaPlayer.create(this, music)
+        mediaPlayer?.seekTo(song.second*1000)
+        if (song.isPlaying)
+            mediaPlayer?.start()
+        timer = Timer(song.playTime, song.isPlaying)
+        timer.start()
+    }
+
+    private fun saveSongInSharedPreferences() {
+        // sharedPreferences 에 현재까지의 내용 저장
+        var sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        var editor = sharedPreferences.edit() // sp 조작시 사용
+        // Gson 을 Json 으로 변환해서 editor를 통해 sp - "song" 에 저장한다.
+        var json = gson.toJson(song)
+        editor.putString("song", json)
+        editor.apply()
+    }
+
+    private fun loadSongFromSharedPreferences() {
+        // sharedPreferences 에 저장된 값 가져오기
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val jsonSong = sharedPreferences.getString("song", null)
+        song = if (jsonSong == null) {
+            Song("라일락 눌", "아이유 눌", 0, 195, false, "music_lilac")
+        } else {
+            gson.fromJson(jsonSong, Song::class.java)
+        }
+    }
+
+    private fun initNavigation() {
+        supportFragmentManager.beginTransaction().replace(R.id.main_frm, HomeFragment())
+            .commitAllowingStateLoss()
+
         binding.mainBnv.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.homeFragment -> {
@@ -98,34 +202,6 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
-
-    }
-
-    private fun setPlayerStatus(isPlaying: Boolean){
-        if (isPlaying){ //플레잉 하게 해라
-            binding.mainMiniplayerPlayBtn.visibility = View.GONE
-            binding.mainMiniplayerPauseBtn.visibility = View.VISIBLE
-        }
-        else {
-            binding.mainMiniplayerPauseBtn.visibility = View.GONE
-            binding.mainMiniplayerPlayBtn.visibility = View.VISIBLE
-        }
-    }
-
-    private fun setMiniPlayer(song : Song){
-        binding.mainMiniplayerTitleTv.text = song.title
-        binding.mainMiniplayerSingerTv.text = song.singer
-        binding.mainSeekbarSb.progress = song.second*1000/song.playTime
-        setPlayerStatus(song.isPlaying)
-
-        val music = resources.getIdentifier(song.music, "raw", this.packageName)
-        mediaPlayer = MediaPlayer.create(this, music)
-        mediaPlayer?.seekTo(song.second*1000)
-        if (song.isPlaying)
-            mediaPlayer?.start()
-
-        timer = Timer(song.playTime, song.isPlaying)
-        timer.start()
     }
 
     // 재생시 seekbar, second 변화하는 timer
@@ -147,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                         // 반복 코드는 SongActivity에 있음
                         runOnUiThread {
                             setPlayerStatus(false)
-                            isPlaying = false
+                            song.isPlaying = false
                         }
                         timer.interrupt()
                     }
@@ -169,76 +245,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // sharedPreferences 에 저장된 값 가져오기
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val jsonSong = sharedPreferences.getString("song", null)
-        song = if (jsonSong==null) {
-            Song("라일락 눌", "아이유 눌", 0, 195, false, "music_lilac")
-        } else {
-            gson.fromJson(jsonSong, Song::class.java)
-        }
-
-        if (createFlag){ // create 즉 앱 처음 실행일때는 sp에 isplaying이 true 값이어도 무조건 isplying을 false로.
-            song.isPlaying = false
-            createFlag = false
-        }
-        setMiniPlayer(song)
-        Log.d("YYYcount", Thread.activeCount().toString())
-    }
-
-    override fun onPause() {
-        super.onPause()
-        song.second = timer.second
-
-        timer.interrupt() // 타이머 종료
-        mediaPlayer?.release() // 미디어 플레이어 해제
-        mediaPlayer = null
-        Log.d("YYYplaying", "main pause"+song.isPlaying.toString())
-        // 반복상태, 랜덤재생 상태도 저장 "song_activity_status" 에
-//        sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
-//        editor = sharedPreferences.edit() // sp 조작시 사용
-//        editor.putInt("repeatStatus", repeatStatus)
-//        editor.putBoolean("randomPlayStatus", randomPlayStatus)
-//        editor.apply()
-        // main에서는 이것을 변경 못함
-    }
-
-
-
-    override fun onStop() {
-        super.onStop()
-
-        mediaPlayer?.pause()
-        timer.isPlaying = false
-        song.isPlaying = false
-        setPlayerStatus(false)
-
-        // sharedPreferences 에 현재까지의 내용 저장
-        var sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        var editor = sharedPreferences.edit() // sp 조작시 사용
-        // Gson 을 Json 으로 변환해서 editor를 통해 sp - "song" 에 저장한다.
-        var json = gson.toJson(song)
-        editor.putString("song", json)
-        editor.apply()
-
-        Log.d("YYYplaying", "main stop"+song.isPlaying.toString())
-    }
-
-    override fun onDestroy() {
-
-
-        super.onDestroy()
-
-    }
-
-    private fun initNavigation() {
-        supportFragmentManager.beginTransaction().replace(R.id.main_frm, HomeFragment())
-            .commitAllowingStateLoss()
     }
 
 }
