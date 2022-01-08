@@ -26,17 +26,14 @@ class SongActivity : AppCompatActivity() {
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initSong()
+
         // 반복재생, 랜덤재생 상태 불러오기 (sharedPreferences - "song_activity_status"
         val sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
         repeatStatus = sharedPreferences.getInt("repeatStatus", 0)
         randomPlayStatus = sharedPreferences.getBoolean("randomPlayStatus", false)
         setRepeatStatus(repeatStatus, false)
         setRandomPlayStatus(randomPlayStatus, false)
-
-        initSong()
-
-        timer = Timer(song.playTime, song.isPlaying)
-        timer.start()
 
         // HomeFragment 로 되돌아가기
         binding.songDownIb.setOnClickListener {
@@ -105,8 +102,8 @@ class SongActivity : AppCompatActivity() {
             song.playTime = intent.getIntExtra("playTime", 0)
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
             song.music = intent.getStringExtra("music")!!
-            val music = resources.getIdentifier(song.music, "raw", this.packageName)
 
+            Log.d("YYYplaying", "song"+song.isPlaying.toString())
             Log.d("YYY", "song의 수신" + song.second.toString())
             binding.songMusicTitleTv.text = song.title
             binding.songSingerNameTv.text = song.singer
@@ -114,8 +111,6 @@ class SongActivity : AppCompatActivity() {
             binding.songStartTimeTv.text = String.format("%02d:%02d", song.second/60, song.second%60)
             binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
             setPlayerStatus(song.isPlaying)
-            mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
-            mediaPlayer?.seekTo(song.second*1000)
         }
     }
 
@@ -228,13 +223,37 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        val music = resources.getIdentifier(song.music, "raw", this.packageName)
+        mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
+        mediaPlayer?.seekTo(song.second*1000)
+        if (song.isPlaying)
+            mediaPlayer?.start()
+        timer = Timer(song.playTime, song.isPlaying)
+        timer.start()
+
+        Log.d("YYYcount", Thread.activeCount().toString())
+    }
 
     override fun onPause() {
         super.onPause()
+        song.second = timer.second
+
+        timer.interrupt() // 타이머 종료
+        mediaPlayer?.release() // 미디어 플레이어 해제
+        mediaPlayer = null
+
+        Log.d("YYYSONG", song.second.toString())
+    }
+
+    override fun onStop() {
+        super.onStop()
+
         mediaPlayer?.pause()
         timer.isPlaying = false
         song.isPlaying = false
-        song.second = timer.second
         setPlayerStatus(false)
 
         // sharedPreferences 에 현재까지의 내용 저장
@@ -251,15 +270,11 @@ class SongActivity : AppCompatActivity() {
         editor.putInt("repeatStatus", repeatStatus)
         editor.putBoolean("randomPlayStatus", randomPlayStatus)
         editor.apply()
-
-        Log.d("YYYSONG", song.second.toString())
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
-        timer.interrupt() // 타이머 종료
-        mediaPlayer?.release() // 미디어 플레이어 해제
-        mediaPlayer = null
+
     }
 }

@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private var song = Song()
     private lateinit var timer: Timer
     private var mediaPlayer: MediaPlayer? = null // 음악 재생시 음악 나오게 하는것
+    private var createFlag : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,14 +28,16 @@ class MainActivity : AppCompatActivity() {
         // 미니플레이어 클릭했을 때 Activity 전환
         binding.mainPlayerLayout.setOnClickListener {
             val intent = Intent(this, SongActivity::class.java)
-            val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), timer.second, 6, false, "music_lilac")
+            val intentSong = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), timer.second, 6, song.isPlaying, "music_lilac")
 
-            intent.putExtra("title", song.title)
-            intent.putExtra("singer", song.singer)
-            intent.putExtra("second", song.second)
-            intent.putExtra("playTime", song.playTime)
-            intent.putExtra("isPlaying", song.isPlaying)
-            intent.putExtra("music", song.music)
+            intent.putExtra("title", intentSong.title)
+            intent.putExtra("singer", intentSong.singer)
+            intent.putExtra("second", intentSong.second)
+            intent.putExtra("playTime", intentSong.playTime)
+            intent.putExtra("isPlaying", intentSong.isPlaying)
+            intent.putExtra("music", intentSong.music)
+
+            Log.d("YYYplaying", "main clicklistne"+intentSong.isPlaying.toString())
 
             startActivity(intent)
         }
@@ -118,24 +121,11 @@ class MainActivity : AppCompatActivity() {
         val music = resources.getIdentifier(song.music, "raw", this.packageName)
         mediaPlayer = MediaPlayer.create(this, music)
         mediaPlayer?.seekTo(song.second*1000)
+        if (song.isPlaying)
+            mediaPlayer?.start()
 
         timer = Timer(song.playTime, song.isPlaying)
         timer.start()
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        // sharedPreferences 에 저장된 값 가져오기
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val jsonSong = sharedPreferences.getString("song", null)
-        song = if (jsonSong==null) {
-            Song("라일락 눌", "아이유 눌", 0, 195, false, "music_lilac")
-        } else {
-            gson.fromJson(jsonSong, Song::class.java)
-        }
-
-        setMiniPlayer(song)
     }
 
     // 재생시 seekbar, second 변화하는 timer
@@ -181,12 +171,51 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // sharedPreferences 에 저장된 값 가져오기
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val jsonSong = sharedPreferences.getString("song", null)
+        song = if (jsonSong==null) {
+            Song("라일락 눌", "아이유 눌", 0, 195, false, "music_lilac")
+        } else {
+            gson.fromJson(jsonSong, Song::class.java)
+        }
+
+        if (createFlag){ // create 즉 앱 처음 실행일때는 sp에 isplaying이 true 값이어도 무조건 isplying을 false로.
+            song.isPlaying = false
+            createFlag = false
+        }
+        setMiniPlayer(song)
+        Log.d("YYYcount", Thread.activeCount().toString())
+    }
+
     override fun onPause() {
         super.onPause()
+        song.second = timer.second
+
+        timer.interrupt() // 타이머 종료
+        mediaPlayer?.release() // 미디어 플레이어 해제
+        mediaPlayer = null
+        Log.d("YYYplaying", "main pause"+song.isPlaying.toString())
+        // 반복상태, 랜덤재생 상태도 저장 "song_activity_status" 에
+//        sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
+//        editor = sharedPreferences.edit() // sp 조작시 사용
+//        editor.putInt("repeatStatus", repeatStatus)
+//        editor.putBoolean("randomPlayStatus", randomPlayStatus)
+//        editor.apply()
+        // main에서는 이것을 변경 못함
+    }
+
+
+
+    override fun onStop() {
+        super.onStop()
+
         mediaPlayer?.pause()
         timer.isPlaying = false
         song.isPlaying = false
-        song.second = timer.second
         setPlayerStatus(false)
 
         // sharedPreferences 에 현재까지의 내용 저장
@@ -197,22 +226,14 @@ class MainActivity : AppCompatActivity() {
         editor.putString("song", json)
         editor.apply()
 
-        Log.d("YYYMAIN", song.second.toString())
-
-        // 반복상태, 랜덤재생 상태도 저장 "song_activity_status" 에
-//        sharedPreferences = getSharedPreferences("song_activity_status", MODE_PRIVATE)
-//        editor = sharedPreferences.edit() // sp 조작시 사용
-//        editor.putInt("repeatStatus", repeatStatus)
-//        editor.putBoolean("randomPlayStatus", randomPlayStatus)
-//        editor.apply()
-        // main에서는 이것을 변경 못함
+        Log.d("YYYplaying", "main stop"+song.isPlaying.toString())
     }
 
     override fun onDestroy() {
+
+
         super.onDestroy()
-        timer.interrupt() // 타이머 종료
-        mediaPlayer?.release() // 미디어 플레이어 해제
-        mediaPlayer = null
+
     }
 
     private fun initNavigation() {
