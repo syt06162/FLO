@@ -107,7 +107,7 @@ class SongActivity : AppCompatActivity() {
             song.music = intent.getStringExtra("music")!!
             val music = resources.getIdentifier(song.music, "raw", this.packageName)
 
-            Log.d("YEJ", "song" + song.second.toString())
+            Log.d("YYY", "song의 수신" + song.second.toString())
             binding.songMusicTitleTv.text = song.title
             binding.songSingerNameTv.text = song.singer
             binding.songMusicplayerProgressSb.progress = song.second*1000/song.playTime
@@ -181,7 +181,12 @@ class SongActivity : AppCompatActivity() {
             try {
                 while(true) {
                     if (second >= playTime) {
+                        // mediaPlayer와 Timer 사이의 차이를 해결하기 위함
                         sleep(1000)
+                        if (!isPlaying)
+                            continue
+                        // mediaPlayer와 Timer 사이의 차이를 해결하기 위함
+
                         when (repeatStatus) {
                             2 -> {
                                 second = 0
@@ -229,7 +234,7 @@ class SongActivity : AppCompatActivity() {
         mediaPlayer?.pause()
         timer.isPlaying = false
         song.isPlaying = false
-        song.second = binding.songMusicplayerProgressSb.progress * song.playTime / 1000
+        song.second = timer.second
         setPlayerStatus(false)
 
         // sharedPreferences 에 현재까지의 내용 저장
@@ -246,6 +251,8 @@ class SongActivity : AppCompatActivity() {
         editor.putInt("repeatStatus", repeatStatus)
         editor.putBoolean("randomPlayStatus", randomPlayStatus)
         editor.apply()
+
+        Log.d("YYYSONG", song.second.toString())
     }
 
 
