@@ -23,6 +23,6 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("YYYcount", Thread.activeCount().toString())
+        Log.d("YYYcount", "splash resume " + Thread.activeCount().toString())
     }
 }

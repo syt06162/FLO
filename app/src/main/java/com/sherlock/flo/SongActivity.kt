@@ -47,36 +47,37 @@ class SongActivity : AppCompatActivity() {
         timer = Timer(song.playTime, song.isPlaying)
         timer.start()
 
-        Log.d("YYYcount", Thread.activeCount().toString())
+        Log.d("YYYcount", "song resume " + Thread.activeCount().toString())
     }
 
     override fun onPause() {
-        super.onPause()
-        
+
         // 시간 정보 song에 저장
         song.second = timer.second
 
         // 음악 종료
+        timer.isPlaying = false
         timer.interrupt() // 타이머 종료
         mediaPlayer?.release() // 미디어 플레이어 해제
         mediaPlayer = null
 
+        super.onPause()
+
         saveSongInSharedPreferences() // 노래 정보 sp에 저장
 
-        Log.d("YYYSONG", song.second.toString())
+        Log.d("YYYcount", "song pause " + Thread.activeCount().toString())
     }
 
     override fun onStop() {
-        super.onStop()
-
         // mediaPlayer, timer 일시정지(pause)
-        mediaPlayer?.pause()
-        timer.isPlaying = false
         song.isPlaying = false
         setPlayerStatus(false)
 
         saveRepeatRandomStatusInSharedPreferences() // 반복재생,랜덤재생 정보 sp에 저장
 
+        Log.d("YYYcount", "song stop " + Thread.activeCount().toString())
+
+        super.onStop()
     }
 
 
@@ -143,8 +144,6 @@ class SongActivity : AppCompatActivity() {
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
             song.music = intent.getStringExtra("music")!!
 
-            Log.d("YYYplaying", "song"+song.isPlaying.toString())
-            Log.d("YYY", "song의 수신" + song.second.toString())
             binding.songMusicTitleTv.text = song.title
             binding.songSingerNameTv.text = song.singer
             binding.songMusicplayerProgressSb.progress = song.second*1000/song.playTime
@@ -245,7 +244,7 @@ class SongActivity : AppCompatActivity() {
 
         override fun run() {
             try {
-                while(true) {
+                while(!currentThread().isInterrupted) {
                     if (second >= playTime) {
                         // mediaPlayer와 Timer 사이의 차이를 해결하기 위함
                         sleep(1000)
@@ -293,6 +292,4 @@ class SongActivity : AppCompatActivity() {
 
         }
     }
-
-
 }
