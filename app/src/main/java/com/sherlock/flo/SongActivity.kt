@@ -41,19 +41,16 @@ class SongActivity : AppCompatActivity() {
         // mediaPlayer와 timer 생성, 그리고 음악 재생(isPlaying에 따라)
         val music = resources.getIdentifier(song.music, "raw", this.packageName)
         mediaPlayer = MediaPlayer.create(this, music) // 음악 파일을 mediaPlayer와 연동
-        mediaPlayer?.seekTo(song.second*1000)
+        mediaPlayer?.seekTo(song.tenmillisecond*10)
         if (song.isPlaying)
             mediaPlayer?.start()
         timer = Timer(song.playTime, song.isPlaying)
         timer.start()
-
-        Log.d("YYYcount", "song resume " + Thread.activeCount().toString())
     }
 
     override fun onPause() {
-
         // 시간 정보 song에 저장
-        song.second = timer.second
+        song.tenmillisecond = timer.tenmillisecond
 
         // 음악 종료
         timer.isPlaying = false
@@ -61,11 +58,9 @@ class SongActivity : AppCompatActivity() {
         mediaPlayer?.release() // 미디어 플레이어 해제
         mediaPlayer = null
 
-        super.onPause()
-
         saveSongInSharedPreferences() // 노래 정보 sp에 저장
 
-        Log.d("YYYcount", "song pause " + Thread.activeCount().toString())
+        super.onPause()
     }
 
     override fun onStop() {
@@ -74,8 +69,6 @@ class SongActivity : AppCompatActivity() {
         setPlayerStatus(false)
 
         saveRepeatRandomStatusInSharedPreferences() // 반복재생,랜덤재생 정보 sp에 저장
-
-        Log.d("YYYcount", "song stop " + Thread.activeCount().toString())
 
         super.onStop()
     }
@@ -90,8 +83,8 @@ class SongActivity : AppCompatActivity() {
         // 재생 일시정지 버튼 클릭시 토글
         binding.songPlayBtnIv.setOnClickListener {
             setPlayerStatus(true)
-            if (timer.second == song.playTime) {
-                song.second = 0
+            if (timer.tenmillisecond == song.playTime*100) {
+                song.tenmillisecond = 0
                 binding.songStartTimeTv.text = "00:00"
                 binding.songMusicplayerProgressSb.progress = 0
                 timer = Timer(song.playTime, song.isPlaying)
@@ -136,18 +129,18 @@ class SongActivity : AppCompatActivity() {
 
     private fun initSong() {
         // 제목, 가수 이름, 음악 시간, 재생상태 받아와서 바꾸기
-        if (intent.hasExtra("title") && intent.hasExtra("singer") && intent.hasExtra("second") && intent.hasExtra("playTime") && intent.hasExtra("isPlaying") && intent.hasExtra("music")){
+        if (intent.hasExtra("title") && intent.hasExtra("singer") && intent.hasExtra("tenmillisecond") && intent.hasExtra("playTime") && intent.hasExtra("isPlaying") && intent.hasExtra("music")){
             song.title = intent.getStringExtra("title")!!
             song.singer = intent.getStringExtra("singer")!!
-            song.second = intent.getIntExtra("second", 0)
+            song.tenmillisecond = intent.getIntExtra("tenmillisecond", 0)
             song.playTime = intent.getIntExtra("playTime", 0)
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
             song.music = intent.getStringExtra("music")!!
 
             binding.songMusicTitleTv.text = song.title
             binding.songSingerNameTv.text = song.singer
-            binding.songMusicplayerProgressSb.progress = song.second*1000/song.playTime
-            binding.songStartTimeTv.text = String.format("%02d:%02d", song.second/60, song.second%60)
+            binding.songMusicplayerProgressSb.progress = song.tenmillisecond*10/song.playTime
+            binding.songStartTimeTv.text = String.format("%02d:%02d",  song.tenmillisecond/100/60, song.tenmillisecond/100%60)
             binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
             setPlayerStatus(song.isPlaying)
         }
@@ -239,28 +232,21 @@ class SongActivity : AppCompatActivity() {
 
     // 재생시 seekbar, second 변화하는 timer
     inner class Timer(private val playTime: Int, var isPlaying: Boolean) : Thread() {
-        internal var second :Int = song.second
-        private var div10second: Float = 0f
+        internal var tenmillisecond :Int = song.tenmillisecond
 
         override fun run() {
             try {
                 while(!currentThread().isInterrupted) {
-                    if (second >= playTime) {
-                        // mediaPlayer와 Timer 사이의 차이를 해결하기 위함
-                        sleep(1000)
-                        if (!isPlaying)
-                            continue
-                        // mediaPlayer와 Timer 사이의 차이를 해결하기 위함
-
+                    if (tenmillisecond >= playTime*100) {
                         when (repeatStatus) {
                             2 -> {
-                                second = 0
+                                tenmillisecond = 0
                                 mediaPlayer?.seekTo(0)
                                 mediaPlayer?.start()
                                 // 다음 곡으로 가기 (나중에 추가해야함)
                             }
                             1 -> {
-                                second = 0
+                                tenmillisecond = 0
                                 mediaPlayer?.seekTo(0)
                                 mediaPlayer?.start()
                             }
@@ -274,16 +260,13 @@ class SongActivity : AppCompatActivity() {
                         }
                     }
                     if (isPlaying){
-                        sleep(100)
-                        div10second += 0.1f
-                        if (div10second >= 1f) {
-                            div10second -= 1f
-                            second += 1
-                            runOnUiThread {
-                                binding.songMusicplayerProgressSb.progress = second*1000/playTime
-                                binding.songStartTimeTv.text = String.format("%02d:%02d", second/60, second%60)
-                            }
+                        sleep(10)
+                        tenmillisecond++
+                        runOnUiThread {
+                            binding.songMusicplayerProgressSb.progress = tenmillisecond*10/playTime
+                            binding.songStartTimeTv.text = String.format("%02d:%02d", tenmillisecond/100/60, tenmillisecond/100%60)
                         }
+
                     }
                 }
             }catch (e: InterruptedException){
